@@ -62,18 +62,16 @@ class parts:
     lips: np.ndarray
 
 
+predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+
 def crop_parts(face256x256):
     """
     Crop the eyes from the face image.
     input size is 256x256 output size is 2x64x64
     """
-    detector = dlib.get_frontal_face_detector()  # type: ignore
-
     gray = cv2.cvtColor(face256x256, cv2.COLOR_BGR2GRAY)
     faces = detector(gray)
     assert len(faces) == 1, 'Expected exactly one face'
-    predictor = dlib.shape_predictor(  # type: ignore
-        "shape_predictor_68_face_landmarks.dat")
 
     landmarks = predictor(gray, faces[0])
 

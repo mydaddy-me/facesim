@@ -28,3 +28,10 @@ tasks:
       - python tasks.py faces
     status:
       - test -f faces
+
+  download_dat:
+    cmds:
+      - wget https://github.com/GuoQuanhao/68_points/raw/refs/heads/master/shape_predictor_68_face_landmarks.dat
+
+    status:
+      - test -f shape_predictor_68_face_landmarks.dat
