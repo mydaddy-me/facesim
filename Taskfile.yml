@@ -3,9 +3,15 @@ version: "3"
 tasks:
   download_dataset:
     cmds:
-      - kaggle datasets download --unzip hearfool/vggface2 -p data
+      - kaggle datasets download hearfool/vggface2
     generates:
-      - data/*
+      - vggface2.zip
+
+  unzip_dataset:
+    deps:
+      - download_dataset
+    cmds:
+      - unzip vggface2.zip -d data/
 
   clean_dataset:
     deps:

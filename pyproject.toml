@@ -12,6 +12,7 @@ opencv-python = "^4.11.0.86"
 numpy = "^2.2.2"
 torch = {version = "^2.6.0+cpu", source = "pytorch"}
 torchvision = {version = "^0.21.0+cpu", source = "pytorch"}
+typer = "^0.15.1"
 
 
 [tool.poetry.group.dev.dependencies]
