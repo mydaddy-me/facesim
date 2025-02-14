@@ -4,17 +4,20 @@ tasks:
   download_dataset:
     cmds:
       - kaggle datasets download hearfool/vggface2
-    generates:
-      - vggface2.zip
+    status:
+      - test -f vggface2.zip
 
   unzip_dataset:
     deps:
       - download_dataset
     cmds:
-      - unzip vggface2.zip -d data/
+      - unzip -n vggface2.zip -d data/
+    status:
+      - test -d data/
 
   clean_dataset:
     deps:
-      - download_dataset
+      - unzip_dataset
     cmds:
       - find data/ -name '*.jpg' -size -8k -delete
+      - python tasks.py del-small-files
