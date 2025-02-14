@@ -3,11 +3,15 @@ from dataclasses import dataclass
 import cv2
 import dlib
 import numpy as np
+from cv2.typing import MatLike
 
 
 def crop_bounding_rectangle(image, rect, ow: int, oh: int):
     aspect_ratio = ow / oh
     x, y, w, h = rect
+    
+    if w < ow or h < oh:
+        return None
 
     if w / h > aspect_ratio:
         new_w = w
@@ -27,20 +31,21 @@ def crop_bounding_rectangle(image, rect, ow: int, oh: int):
     return cv2.resize(res, (ow, oh))
 
 
-def crop_face(image):
+detector = dlib.get_frontal_face_detector()  # type: ignore
+
+def crop_face(image:MatLike):
     """ 
     Crop the face from the image. 
-    input size is 400x400 output size is 256x256
     """
     w, h = image.shape[:2]
-    assert w == h == 400, 'Expected square image of size 400x400'
-    detector = dlib.get_frontal_face_detector()  # type: ignore
 
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     faces = detector(gray)
-    assert len(faces) == 1, 'Expected exactly one face'
-
+    
+    if not faces:
+        return None
+    
     face = faces[0]
     x, y, w, h = face.left(), face.top(), face.width(), face.height()
     return crop_bounding_rectangle(image, (x, y, w, h), 256, 256)

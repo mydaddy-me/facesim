@@ -20,4 +20,11 @@ tasks:
       - unzip_dataset
     cmds:
       - find data/ -name '*.jpg' -size -8k -delete
-      - python tasks.py del-small-files
+
+  faces:
+    deps:
+      - clean_dataset
+    cmds:
+      - python tasks.py faces
+    status:
+      - test -f faces
