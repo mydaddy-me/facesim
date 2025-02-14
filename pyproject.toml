@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "facesim"
+version = "0.0.0"
+description = ""
+authors = ["Gilad Kutiel <gilad.kutiel@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+dlib = "^19.24.6"
+opencv-python = "^4.11.0.86"
+numpy = "^2.2.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
