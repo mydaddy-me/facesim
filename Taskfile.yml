@@ -1,0 +1,14 @@
+version: "3"
+
+tasks:
+  download_dataset:
+    cmds:
+      - kaggle datasets download --unzip hearfool/vggface2 -p data
+    generates:
+      - data
+
+  clean_dataset:
+    deps:
+      - download_dataset
+    cmds:
+      - ind data/ -name '*.jpg' -size -10k -delete

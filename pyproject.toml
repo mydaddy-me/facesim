@@ -12,6 +12,10 @@ opencv-python = "^4.11.0.86"
 numpy = "^2.2.2"
 
 
+[tool.poetry.group.dev.dependencies]
+go-task-bin = "^3.41.0"
+kaggle = "^1.6.17"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
