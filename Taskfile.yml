@@ -17,4 +17,4 @@ tasks:
     deps:
       - download_dataset
     cmds:
-      - find data/ -name '*.jpg' -size -10k -delete
+      - find data/ -name '*.jpg' -size -8k -delete

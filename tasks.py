@@ -4,7 +4,7 @@ from pathlib import Path
 
 app = typer.Typer()
 
-MIN_DIM = 400
+MIN_DIM = 350
 def del_if_small(file:Path):
     img = cv2.imread(str(file))
     h, w = img.shape[:2]
