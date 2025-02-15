@@ -29,8 +29,8 @@ def crop_resize(image: MatLike, rect: Rect, size: int = 64):
     try:
         x, y, w, h = rect
         d = max(w, h) // 2
-        cx = x + d
-        cy = y + d
+        cx = x + w // 2
+        cy = y + h // 2
         res = image[cy - d:cy + d, cx - d:cx + d]
         return cv2.resize(res, (size, size))
     except Exception:
