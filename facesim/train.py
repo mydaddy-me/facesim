@@ -82,8 +82,8 @@ if __name__ == "__main__":
             # EarlyStopping(
             #     monitor='loss/val',
             #     patience=3,
-            #     mode='min')]
-                )
+            #     mode='min')
+        ])
 
     trainer.fit(
         module,
