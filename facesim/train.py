@@ -75,7 +75,7 @@ if __name__ == "__main__":
         deterministic=True,
         callbacks=[
             EarlyStopping(
-                monitor='loss',
+                monitor='loss/val',
                 patience=3,
                 mode='min')])
 
