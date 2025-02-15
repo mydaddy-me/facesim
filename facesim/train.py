@@ -71,7 +71,7 @@ if __name__ == "__main__":
     module = FaceSimModule(model)
 
     trainer = pl.Trainer(
-        max_epochs=4,
+        max_epochs=100,
         deterministic=True,
         callbacks=[
             EarlyStopping(

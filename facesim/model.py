@@ -38,6 +38,7 @@ class Parts:
         return torch.utils.data.DataLoader(
             self.dataset(len),
             batch_size=bs,
+            num_workers=4,
             shuffle=False)
 
 
