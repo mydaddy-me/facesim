@@ -15,9 +15,8 @@ def pad64x64(img):
     return torch.nn.functional.pad(img, (0, 64 - w, 0, 64 - h))
 
 
-class PartsDataset(torch.utils.data.Dataset):
-    def __init__(self, parts=[fs.eyebrow, fs.eye, fs.nose, fs.lips], length=2**16):
-        self.length = length
+class Parts:
+    def __init__(self, parts=[fs.eyebrow, fs.eye, fs.nose, fs.lips]):
         self.parts = parts
         self.imgs = defaultdict(lambda: defaultdict(list))
 
@@ -28,6 +27,25 @@ class PartsDataset(torch.utils.data.Dataset):
                 img = Image.open(f)
                 img = to_tensor(img)
                 self.imgs[part][label].append(img)
+
+    def dataset(self, length: int):
+        return PartsDataset(
+            imgs=self.imgs,
+            length=length,
+            parts=self.parts)
+
+    def dataloader(self, len: int, bs: int = 32):
+        return torch.utils.data.DataLoader(
+            self.dataset(len),
+            batch_size=bs,
+            shuffle=False)
+
+
+class PartsDataset(torch.utils.data.Dataset):
+    def __init__(self, *, imgs, length, parts):
+        self.imgs = imgs
+        self.parts = parts
+        self.length = length
 
     def __len__(self):
         return self.length

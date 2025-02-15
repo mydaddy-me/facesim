@@ -6,7 +6,7 @@ from torch.nn.functional import cosine_similarity as cos
 from torch.nn.functional import cross_entropy, softmax
 from torchmetrics.functional import accuracy
 
-from facesim.model import FaceSim, PartsDataset
+from facesim.model import FaceSim, Parts
 
 
 class FaceSimModule(pl.LightningModule):
@@ -57,14 +57,7 @@ class FaceSimModule(pl.LightningModule):
 if __name__ == "__main__":
     seed_everything(0)
 
-    ds = PartsDataset()
-    a, p, n = ds[0]
-
-    dl = torch.utils.data.DataLoader(
-        ds,
-        batch_size=32,
-        num_workers=4,
-        shuffle=False)
+    parts = Parts()
 
     model = FaceSim()
     module = FaceSimModule(model)
@@ -78,4 +71,7 @@ if __name__ == "__main__":
                 patience=3,
                 mode='min')])
 
-    trainer.fit(module, dl)
+    trainer.fit(
+        module,
+        train_dataloaders=parts.dataloader(2**15),
+        val_dataloaders=parts.dataloader(2**8))
