@@ -59,7 +59,7 @@ class FaceSimModule(pl.LightningModule):
     def configure_optimizers(self):
         return torch.optim.Adam(
             self.model.parameters(),
-            lr=1e-4)
+            lr=1e-3)
 
 
 if __name__ == "__main__":
