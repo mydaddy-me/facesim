@@ -92,8 +92,8 @@ class FaceSim(nn.Module):
             # nose      64x32
             # lips      32x64
 
-            *[blk(i, o) for i, o in io([3, 16, 32, 64, 128])],
-            nn.Conv2d(128, 128, 4, 1, 0))
+            *[blk(i, o) for i, o in io([3, 8, 16, 32, 64])],
+            nn.Conv2d(64, 128, 4, 1, 0))
 
     def forward(self, x):
         assert x.shape[1:] == (3, 64, 64), \

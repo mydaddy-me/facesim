@@ -3,7 +3,7 @@ from typing import Literal
 import lightning.pytorch as pl
 import torch
 from lightning import seed_everything
-from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
+from lightning.pytorch.callbacks import ModelCheckpoint
 from torch.nn.functional import cosine_similarity as cos
 from torch.nn.functional import cross_entropy, softmax
 from torchmetrics.functional import accuracy
@@ -79,12 +79,13 @@ if __name__ == "__main__":
                 monitor='loss/val',
                 mode='min'),
 
-            EarlyStopping(
-                monitor='loss/val',
-                patience=3,
-                mode='min')])
+            # EarlyStopping(
+            #     monitor='loss/val',
+            #     patience=3,
+            #     mode='min')]
+                )
 
     trainer.fit(
         module,
-        train_dataloaders=parts.dataloader(2**13),
+        train_dataloaders=parts.dataloader(2**10),
         val_dataloaders=parts.dataloader(2**8))
