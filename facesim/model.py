@@ -60,7 +60,7 @@ class FaceSim(nn.Module):
 
         def blk(i, o):
             return nn.Sequential(
-                nn.Conv2d(i, o, 3, 1, 1, bias=False),
+                nn.Conv2d(i, o, 3, 2, 1, bias=False),
                 nn.BatchNorm2d(o),
                 nn.Sigmoid())
 
@@ -74,11 +74,12 @@ class FaceSim(nn.Module):
             blk(8, 16),    # 32
             blk(16, 32),   # 16
             blk(32, 64),   # 8
-            blk(64, 64),   # 4
-            blk(64, 64),   # 2
-            nn.Conv2d(64, 128, 2, 1, 0))
+            nn.Conv2d(64, 128, 4, 1, 0))
 
     def forward(self, x):
+        assert x.shape[1:] == (3, 64, 64), \
+            f"Expected (3, 64, 64) got {x.shape[1:]}"
+
         embd = self.net(x).squeeze()
         assert embd.shape == (len(x), 128), \
             f"Expected ({len(x)}, 128,) got {embd.shape}"
@@ -88,13 +89,6 @@ class FaceSim(nn.Module):
 
 if __name__ == "__main__":
 
-    dataset = PartsDataset()
     model = FaceSim()
-
-    for anchor, positive, negative in dataset:
-        # anchor = model(anchor)
-        # positive = model(positive)
-        # negative = model(negative)
-
-        print(anchor.shape, positive.shape, negative.shape)
-        break
+    e = model(torch.rand(32, 3, 64, 64))
+    print(e.shape)
