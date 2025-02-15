@@ -1,5 +1,6 @@
 import pytorch_lightning as pl
 import torch
+from lightning import seed_everything
 from torch.nn.functional import cosine_similarity as cos
 from torch.nn.functional import cross_entropy, softmax
 from torchmetrics.functional import accuracy
@@ -49,10 +50,12 @@ class FaceSimModule(pl.LightningModule):
     def configure_optimizers(self):
         return torch.optim.Adam(
             self.model.parameters(),
-            lr=1e-3)
+            lr=1e-2)
 
 
 if __name__ == "__main__":
+    seed_everything(0)
+
     ds = PartsDataset()
     a, p, n = ds[0]
 
@@ -65,5 +68,8 @@ if __name__ == "__main__":
     model = FaceSim()
     module = FaceSimModule(model)
 
-    trainer = pl.Trainer(max_epochs=10)
+    trainer = pl.Trainer(
+        max_epochs=2,
+        deterministic=True)
+
     trainer.fit(module, dl)
