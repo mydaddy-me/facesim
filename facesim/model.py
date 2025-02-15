@@ -112,6 +112,5 @@ if __name__ == "__main__":
     ds = parts.dataset(10)
     a, p, n = ds[0]
 
-    save_image(a, 'a.jpg')
-    save_image(p, 'p.jpg')
-    save_image(n, 'n.jpg')
+    apn = torch.stack([a, p, n], dim=0)
+    save_image(apn, 'apn.jpg')
