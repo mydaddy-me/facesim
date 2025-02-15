@@ -10,6 +10,11 @@ from tqdm import tqdm
 from facesim.fs import fs
 
 
+def pad64x64(img):
+    h, w = img.shape[1:]
+    return torch.nn.functional.pad(img, (0, 64 - w, 0, 64 - h))
+
+
 class PartsDataset(torch.utils.data.Dataset):
     def __init__(self, parts=[fs.eyebrow, fs.eye, fs.nose, fs.lips], length=2**16):
         self.length = length
@@ -41,7 +46,10 @@ class PartsDataset(torch.utils.data.Dataset):
         positive = choice(imgs(l1))
         negative = choice(imgs(l2))
 
-        return anchor, positive, negative
+        return (
+            pad64x64(anchor),
+            pad64x64(positive),
+            pad64x64(negative))
 
 
 class FaceSim(nn.Module):
@@ -67,13 +75,6 @@ class FaceSim(nn.Module):
             nn.Conv2d(64, 128, 4, 1, 0))
 
     def forward(self, x):
-        h, w = x.shape[1:]
-        pl = (64 - w) // 2
-        pr = 64 - w - pl
-        pt = (64 - h) // 2
-        pb = 64 - h - pt
-        x = torch.nn.functional.pad(x, (pl, pr, pt, pb))
-
         assert x.shape[1:] == (3, 64, 64), \
             f"Expected (3, 64, 64) got {x.shape[1:]}"
 
