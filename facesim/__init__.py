@@ -14,9 +14,25 @@ logging.basicConfig(
     handlers=[RichHandler(rich_tracebacks=True)]
 )
 
-def crop_bounding_rectangle(image, rect, ow: int, oh: int):
-    aspect_ratio = ow / oh
+Rect = tuple[int, int, int, int]
+
+def pad(rect:Rect, pad:float = 0.1):
     x, y, w, h = rect
+    
+    pad_x = int(w * pad)
+    pad_y = int(h * pad)
+
+    return x - pad_x, y - pad_y, w + 2 * pad_x, h + 2 * pad_y
+
+def crop_bounding_rectangle(
+        image:MatLike, 
+        rect:Rect, 
+        ow: int, 
+        oh: int, 
+        padding=0.1):
+
+    aspect_ratio = ow / oh
+    x, y, w, h = pad(rect, padding)
     
     if w / h > aspect_ratio:
         new_w = w
