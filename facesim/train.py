@@ -2,6 +2,7 @@ import pytorch_lightning as pl
 import torch
 from torch.nn.functional import cosine_similarity as cos
 from torch.nn.functional import cross_entropy, softmax
+from torchmetrics.functional import accuracy
 
 from facesim.model import FaceSim, PartsDataset
 
@@ -28,10 +29,15 @@ class FaceSimModule(pl.LightningModule):
 
         prob = softmax(sim, dim=1)
         pos_prob = prob[:, 0]
+        true = torch.ones_like(pos_prob)
 
-        return cross_entropy(
-            pos_prob,
-            torch.ones_like(pos_prob))
+        acc = accuracy(pos_prob, true, task='binary')
+        self.log('acc', acc, prog_bar=True)
+
+        loss = cross_entropy(pos_prob, true)
+        self.log('loss', loss, prog_bar=True)
+
+        return loss
 
     def configure_optimizers(self):
         return torch.optim.Adam(

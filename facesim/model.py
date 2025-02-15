@@ -70,15 +70,20 @@ class FaceSim(nn.Module):
             # nose      64x32
             # lips      32x64
 
-            blk(3, 8),     # 32
-            blk(8, 16),    # 16
-            blk(16, 32),   # 8
-            blk(32, 64),   # 4
-            blk(64, 128),  # 2
-            nn.AdaptiveAvgPool2d(1))
+            blk(3, 8),     # 64
+            blk(8, 16),    # 32
+            blk(16, 32),   # 16
+            blk(32, 64),   # 8
+            blk(64, 64),   # 4
+            blk(64, 64),   # 2
+            nn.Conv2d(64, 128, 2, 1, 0))
 
     def forward(self, x):
-        return self.net(x).squeeze()
+        embd = self.net(x).squeeze()
+        assert embd.shape == (len(x), 128), \
+            f"Expected ({len(x)}, 128,) got {embd.shape}"
+
+        return embd
 
 
 if __name__ == "__main__":
