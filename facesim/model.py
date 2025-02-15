@@ -2,8 +2,9 @@ from collections import defaultdict
 from random import choice
 
 import torch
+from PIL import Image
 from torch import nn
-from torchvision.io import read_image
+from torchvision.transforms.functional import to_tensor
 from tqdm import tqdm
 
 from facesim.fs import fs
@@ -19,7 +20,9 @@ class PartsDataset(torch.utils.data.Dataset):
             for f in tqdm(part.rglob('*.jpg')):
                 label = f.parent.name
                 part = f.parent.parent.name
-                self.imgs[part][label].append(read_image(str(f)))
+                img = Image.open(f)
+                img = to_tensor(img)
+                self.imgs[part][label].append(img)
 
     def __len__(self):
         return self.length
@@ -57,7 +60,7 @@ class FaceSim(nn.Module):
 
         def blk(i, o):
             return nn.Sequential(
-                nn.Conv2d(i, o, 3, 1, 1),
+                nn.Conv2d(i, o, 3, 1, 1, bias=False),
                 nn.BatchNorm2d(o),
                 nn.Sigmoid())
 

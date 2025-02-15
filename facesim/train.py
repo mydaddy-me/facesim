@@ -1,6 +1,7 @@
 import pytorch_lightning as pl
 import torch
-import torch.nn.functional as F
+from torch.nn.functional import cosine_similarity as cos
+from torch.nn.functional import cross_entropy, softmax
 
 from facesim.model import FaceSim, PartsDataset
 
@@ -17,18 +18,18 @@ class FaceSimModule(pl.LightningModule):
         a, p, n = batch
         ae, pe, ne = self.model(a), self.model(p), self.model(n)
 
-        ap_sim = F.cosine_similarity(ae, pe)
-        an_sim = F.cosine_similarity(ae, ne)
+        ap_sim = cos(ae, pe)
+        an_sim = cos(ae, ne)
 
-        sim = torch.hstack([ap_sim, an_sim])
+        sim = torch.stack([ap_sim, an_sim], dim=1)
 
-        assert sim.shape == (
-            len(batch), 2), f"Expected (batch, 2) got {sim.shape}"
+        assert sim.shape == (len(a), 2), \
+            f"Expected ({len(a)}, 2) got {sim.shape}"
 
-        prob = F.softmax(sim, dim=1)
+        prob = softmax(sim, dim=1)
         pos_prob = prob[:, 0]
 
-        return F.cross_entropy(
+        return cross_entropy(
             pos_prob,
             torch.ones_like(pos_prob))
 
