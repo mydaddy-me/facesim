@@ -1,10 +1,10 @@
 .vscode
 
 data
-faces
 dist
 __pycache__
 
 
 *.zip
 *.dat
+*.jpg

@@ -11,6 +11,7 @@ class fs:
     data = Path('data')
     faces = Path('faces')
     nose = Path('nose')
+    lips = Path('lips')
 
 @app.command()
 def faces():
@@ -36,17 +37,27 @@ def faces():
 @app.command()
 def parts():
     fs.nose.mkdir(exist_ok=True)
+    fs.lips.mkdir(exist_ok=True)
+
     for f in tqdm(fs.faces.rglob('*.jpg')):
         label = f.parent.name
         face = cv2.imread(str(f))
 
         parts = crop_parts(face)
+        
+        if parts.nose is not None:
+            nose_dir = fs.nose / label
+            nose_dir.mkdir(exist_ok=True)
+            nose_file = nose_dir / f.name
 
-        out_dir = fs.nose / label
-        out_dir.mkdir(exist_ok=True)
-        out_file = out_dir / f.name
+            cv2.imwrite(str(nose_file), parts.nose)
 
-        cv2.imwrite(str(out_file), parts.nose)
+        if parts.lips is not None:
+            lips_dir = fs.lips / label
+            lips_dir.mkdir(exist_ok=True)
+            lips_file = lips_dir / f.name
+
+            cv2.imwrite(str(lips_file), parts.lips)
 
 @app.command()
 def nop():

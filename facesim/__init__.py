@@ -2,15 +2,24 @@ from dataclasses import dataclass
 
 import cv2
 import dlib
+import logging
 import numpy as np
 from cv2.typing import MatLike
+from rich.logging import RichHandler
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(message)s",
+    datefmt="[%X]",
+    handlers=[RichHandler(rich_tracebacks=True)]
+)
 
 def crop_bounding_rectangle(image, rect, ow: int, oh: int):
     aspect_ratio = ow / oh
     x, y, w, h = rect
     
     if w < ow or h < oh:
+        logging.warning(f"Bounding box too small: {w}x{h}")
         return None
 
     if w / h > aspect_ratio:
@@ -53,11 +62,10 @@ def crop_face(image:MatLike):
 
 @dataclass
 class parts:
-    face: np.ndarray
-    left_eyebrow: np.ndarray
-    right_eyebrow: np.ndarray
-    left_eye: np.ndarray
-    right_eye: np.ndarray
+    # left_eyebrow: np.ndarray
+    # right_eyebrow: np.ndarray
+    # left_eye: np.ndarray
+    # right_eye: np.ndarray
     nose: np.ndarray
     lips: np.ndarray
 
@@ -69,11 +77,10 @@ def crop_parts(face256x256):
     Crop the eyes from the face image.
     input size is 256x256 output size is 2x64x64
     """
-    gray = cv2.cvtColor(face256x256, cv2.COLOR_BGR2GRAY)
-    faces = detector(gray)
-    assert len(faces) == 1, 'Expected exactly one face'
+    assert face256x256.shape[:2] == (256, 256), "Input image must be 256x256"
 
-    landmarks = predictor(gray, faces[0])
+    gray = cv2.cvtColor(face256x256, cv2.COLOR_BGR2GRAY)
+    landmarks = predictor(gray, dlib.rectangle(0, 0, 256, 256))
 
     left_eyebrow_pts = [
         landmarks.part(n)
@@ -99,8 +106,7 @@ def crop_parts(face256x256):
         landmarks.part(n)
         for n in range(48, 68)]
 
-    def extract_bb(pts, ow=64, oh=64):
-        """ Helper function to crop an eye region from the face image. """
+    def extract_bb(pts, ow=48, oh=48):
         x_min = min(pt.x for pt in pts)
         y_min = min(pt.y for pt in pts)
         x_max = max(pt.x for pt in pts)
@@ -109,12 +115,11 @@ def crop_parts(face256x256):
         return crop_bounding_rectangle(face256x256, rect, ow, oh)
 
     return parts(
-        face=face256x256,
-        left_eyebrow=extract_bb(left_eyebrow_pts, oh=32),
-        right_eyebrow=extract_bb(right_eyebrow_pts, oh=32),
-        left_eye=extract_bb(left_eye_pts, oh=48),
-        right_eye=extract_bb(right_eye_pts, oh=48),
-        nose=extract_bb(nose_pts, ow=48),
-        lips=extract_bb(lips_pts, oh=48))
+        # left_eyebrow=extract_bb(left_eyebrow_pts, oh=32),
+        # right_eyebrow=extract_bb(right_eyebrow_pts, oh=32),
+        # left_eye=extract_bb(left_eye_pts, oh=32),
+        # right_eye=extract_bb(right_eye_pts, oh=32),
+        nose=extract_bb(nose_pts, ow=24),
+        lips=extract_bb(lips_pts, oh=16))
 
 

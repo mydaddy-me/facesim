@@ -12,30 +12,25 @@ tasks:
       - download_dataset
     cmds:
       - unzip -n vggface2.zip -d data/
+      - find data/ -name '*.jpg' -size -8k -delete
     status:
       - test -d data/
 
-  clean_dataset:
+  faces:
     deps:
       - unzip_dataset
     cmds:
-      - find data/ -name '*.jpg' -size -8k -delete
-
-  faces:
-    deps:
-      - clean_dataset
-    cmds:
       - python tasks.py faces
     status:
-      - test -f faces
+      - test -d faces
 
-  noses:
+  parts:
     deps:
       - faces
     cmds:
-      - python tasks.py noses
+      - python tasks.py parts
     status:
-      - test -f noses
+      - test -d noses
 
   download_dat:
     cmds:
