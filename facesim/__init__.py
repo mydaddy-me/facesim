@@ -125,7 +125,7 @@ def crop_parts(face256x256):
         landmarks.part(n)
         for n in range(48, 68)]
 
-    def extract_bb(pts, ow=48, oh=48):
+    def extract_bb(pts, ow=64, oh=64):
         x_min = min(pt.x for pt in pts)
         y_min = min(pt.y for pt in pts)
         x_max = max(pt.x for pt in pts)
@@ -134,11 +134,11 @@ def crop_parts(face256x256):
         return crop_bounding_rectangle(face256x256, rect, ow, oh)
 
     return parts(
-        left_eyebrow=extract_bb(left_eyebrow_pts, oh=24),
-        right_eyebrow=extract_bb(right_eyebrow_pts, oh=24),
-        left_eye=extract_bb(left_eye_pts, oh=24),
-        right_eye=extract_bb(right_eye_pts, oh=24),
-        nose=extract_bb(nose_pts, ow=24),
-        lips=extract_bb(lips_pts, oh=24))
+        left_eyebrow=extract_bb(left_eyebrow_pts, oh=32),
+        right_eyebrow=extract_bb(right_eyebrow_pts, oh=32),
+        left_eye=extract_bb(left_eye_pts, oh=32, ow=48),
+        right_eye=extract_bb(right_eye_pts, oh=32, ow=48),
+        nose=extract_bb(nose_pts, ow=32),
+        lips=extract_bb(lips_pts, oh=32))
 
 
