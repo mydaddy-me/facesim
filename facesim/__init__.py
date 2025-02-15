@@ -25,10 +25,11 @@ def pad(rect: Rect, pad: float = 0.1):
     return x - pad_x, y - pad_y, w + 2 * pad_x, h + 2 * pad_y
 
 
-def crop_resize(image: MatLike, rect: Rect, size: int = 64):
+def crop_resize(image: MatLike, rect: Rect, size: int = 64, pad=1.1):
     try:
         x, y, w, h = rect
         d = max(w, h) // 2
+        d = round(d * pad)
         cx = x + w // 2
         cy = y + h // 2
         res = image[cy - d:cy + d, cx - d:cx + d]
@@ -81,9 +82,12 @@ def crop_parts(face256x256):
         f"Input image must be 256x256 got {face256x256.shape[:2]}"
 
     gray = cv2.cvtColor(face256x256, cv2.COLOR_BGR2GRAY)
-    # faces = detector(gray)
-    # assert len(faces) == 1, f"Expected 1 face, got {len(faces)}"
-    landmarks = predictor(gray, dlib.rectangle(0, 0, 256, 256))  # type: ignore
+    faces = detector(gray)
+
+    if not faces:
+        return parts(None, None, None, None, None, None)
+
+    landmarks = predictor(gray, faces[0])
 
     left_eyebrow_pts = [
         landmarks.part(n)
