@@ -37,21 +37,11 @@ class PartsDataset(torch.utils.data.Dataset):
         def imgs(label):
             return self.imgs[part][label]
 
-        def pad64x64(img):
-            h, w = img.shape[1:]
-            pad_h = (64 - h % 64) % 64
-            pad_w = (64 - w % 64) % 64
-
-            return torch.nn.functional.pad(img, (0, pad_w, 0, pad_h))
-
         anchor = choice(imgs(l1))
         positive = choice(imgs(l1))
         negative = choice(imgs(l2))
 
-        return (
-            pad64x64(anchor),
-            pad64x64(positive),
-            pad64x64(negative))
+        return anchor, positive, negative
 
 
 class FaceSim(nn.Module):
@@ -77,6 +67,13 @@ class FaceSim(nn.Module):
             nn.Conv2d(64, 128, 4, 1, 0))
 
     def forward(self, x):
+        h, w = x.shape[1:]
+        pl = (64 - w) // 2
+        pr = 64 - w - pl
+        pt = (64 - h) // 2
+        pb = 64 - h - pt
+        x = torch.nn.functional.pad(x, (pl, pr, pt, pb))
+
         assert x.shape[1:] == (3, 64, 64), \
             f"Expected (3, 64, 64) got {x.shape[1:]}"
 
