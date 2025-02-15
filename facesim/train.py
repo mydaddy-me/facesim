@@ -1,4 +1,4 @@
-import pytorch_lightning as pl
+import lightning.pytorch as pl
 import torch
 from lightning import seed_everything
 from lightning.pytorch.callbacks.early_stopping import EarlyStopping
@@ -76,7 +76,6 @@ if __name__ == "__main__":
             EarlyStopping(
                 monitor='loss',
                 patience=3,
-                mode='min')  # type: ignore
-        ])
+                mode='min')])
 
     trainer.fit(module, dl)
