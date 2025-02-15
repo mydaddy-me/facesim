@@ -1,19 +1,10 @@
-from pathlib import Path
 import cv2
 from tqdm import tqdm
 import typer
-
 from facesim import crop_face, crop_parts
+from facesim.fs import fs
 
 app = typer.Typer()
-
-class fs:
-    data = Path('data')
-    faces = Path('faces')
-    eyebrow = Path('eyebrow')
-    eye = Path('eye')
-    nose = Path('nose')
-    lips = Path('lips')
 
 @app.command()
 def faces():
