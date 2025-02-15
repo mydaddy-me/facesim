@@ -27,14 +27,18 @@ class FaceSimModule(pl.LightningModule):
         assert sim.shape == (len(a), 2), \
             f"Expected ({len(a)}, 2) got {sim.shape}"
 
+        # pos_prob = prob[:, 0]
+        target = torch.zeros_like(
+            ap_sim,
+            dtype=torch.long)
+
         prob = softmax(sim, dim=1)
-        pos_prob = prob[:, 0]
-        true = torch.ones_like(pos_prob)
+        self.log(
+            'acc',
+            accuracy(prob, target, task='binary'),
+            prog_bar=True)
 
-        acc = accuracy(pos_prob, true, task='binary')
-        self.log('acc', acc, prog_bar=True)
-
-        loss = cross_entropy(pos_prob, true)
+        loss = cross_entropy(sim, target)
         self.log('loss', loss, prog_bar=True)
 
         return loss
