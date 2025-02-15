@@ -34,11 +34,21 @@ class PartsDataset(torch.utils.data.Dataset):
         def imgs(label):
             return self.imgs[part][label]
 
+        def pad64x64(img):
+            h, w = img.shape[1:]
+            pad_h = (64 - h % 64) % 64
+            pad_w = (64 - w % 64) % 64
+
+            return torch.nn.functional.pad(img, (0, pad_w, 0, pad_h))
+
         anchor = choice(imgs(l1))
         positive = choice(imgs(l1))
         negative = choice(imgs(l2))
 
-        return anchor, positive, negative
+        return (
+            pad64x64(anchor),
+            pad64x64(positive),
+            pad64x64(negative))
 
 
 class FaceSim(nn.Module):
