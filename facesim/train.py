@@ -77,8 +77,6 @@ if __name__ == "__main__":
 
             ModelCheckpoint(
                 monitor='loss/val',
-                filename='model',
-                save_top_k=1,
                 mode='min'),
 
             EarlyStopping(
