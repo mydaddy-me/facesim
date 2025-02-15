@@ -87,5 +87,5 @@ if __name__ == "__main__":
 
     trainer.fit(
         module,
-        train_dataloaders=parts.dataloader(2**10),
-        val_dataloaders=parts.dataloader(2**8))
+        train_dataloaders=parts.dataloader(2**6),
+        val_dataloaders=parts.dataloader(2**6))
