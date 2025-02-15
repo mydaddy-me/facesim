@@ -19,6 +19,8 @@ tqdm = "^4.67.1"
 [tool.poetry.group.dev.dependencies]
 go-task-bin = "^3.41.0"
 kaggle = "^1.6.17"
+lightning = "^2.5.0.post0"
+tensorboard = "^2.19.0"
 
 [build-system]
 requires = ["poetry-core"]

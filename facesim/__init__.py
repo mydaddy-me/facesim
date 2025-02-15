@@ -1,9 +1,8 @@
+import logging
 from dataclasses import dataclass
 
 import cv2
 import dlib
-import logging
-import numpy as np
 from cv2.typing import MatLike
 from rich.logging import RichHandler
 
@@ -16,24 +15,26 @@ logging.basicConfig(
 
 Rect = tuple[int, int, int, int]
 
-def pad(rect:Rect, pad:float = 0.1):
+
+def pad(rect: Rect, pad: float = 0.1):
     x, y, w, h = rect
-    
+
     pad_x = int(w * pad)
     pad_y = int(h * pad)
 
     return x - pad_x, y - pad_y, w + 2 * pad_x, h + 2 * pad_y
 
+
 def crop_bounding_rectangle(
-        image:MatLike, 
-        rect:Rect, 
-        ow: int, 
-        oh: int, 
+        image: MatLike,
+        rect: Rect,
+        ow: int,
+        oh: int,
         padding=0.1):
 
     aspect_ratio = ow / oh
     x, y, w, h = pad(rect, padding)
-    
+
     if w / h > aspect_ratio:
         new_w = w
         new_h = int(w / aspect_ratio)
@@ -58,7 +59,8 @@ def crop_bounding_rectangle(
 
 detector = dlib.get_frontal_face_detector()  # type: ignore
 
-def crop_face(image:MatLike):
+
+def crop_face(image: MatLike):
     """ 
     Crop the face from the image. 
     """
@@ -67,10 +69,10 @@ def crop_face(image:MatLike):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     faces = detector(gray)
-    
+
     if not faces:
         return None
-    
+
     face = faces[0]
     x, y, w, h = face.left(), face.top(), face.width(), face.height()
     return crop_bounding_rectangle(image, (x, y, w, h), 256, 256)
@@ -78,15 +80,17 @@ def crop_face(image:MatLike):
 
 @dataclass
 class parts:
-    left_eyebrow: np.ndarray
-    right_eyebrow: np.ndarray
-    left_eye: np.ndarray
-    right_eye: np.ndarray
-    nose: np.ndarray
-    lips: np.ndarray
+    left_eyebrow: MatLike | None
+    right_eyebrow: MatLike | None
+    left_eye: MatLike | None
+    right_eye: MatLike | None
+    nose: MatLike | None
+    lips: MatLike | None
 
 
-predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+predictor = dlib.shape_predictor(  # type: ignore
+    "shape_predictor_68_face_landmarks.dat")
+
 
 def crop_parts(face256x256):
     """
@@ -99,7 +103,7 @@ def crop_parts(face256x256):
     gray = cv2.cvtColor(face256x256, cv2.COLOR_BGR2GRAY)
     # faces = detector(gray)
     # assert len(faces) == 1, f"Expected 1 face, got {len(faces)}"
-    landmarks = predictor(gray, dlib.rectangle(0, 0, 256, 256))
+    landmarks = predictor(gray, dlib.rectangle(0, 0, 256, 256))  # type: ignore
 
     left_eyebrow_pts = [
         landmarks.part(n)
@@ -140,5 +144,3 @@ def crop_parts(face256x256):
         right_eye=extract_bb(right_eye_pts, oh=32, ow=48),
         nose=extract_bb(nose_pts, ow=32),
         lips=extract_bb(lips_pts, oh=32))
-
-

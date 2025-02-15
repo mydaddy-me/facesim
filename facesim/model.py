@@ -1,13 +1,16 @@
 from collections import defaultdict
-from torch import nn
-from tqdm import tqdm
-from facesim.fs import fs
-from torchvision.io import read_image
 from random import choice
 
+import torch
+from torch import nn
+from torchvision.io import read_image
+from tqdm import tqdm
 
-class PartsDataset:
-    def __init__(self, parts = [fs.eyebrow, fs.eye, fs.nose, fs.lips], length = 2**16):
+from facesim.fs import fs
+
+
+class PartsDataset(torch.utils.data.Dataset):
+    def __init__(self, parts=[fs.eyebrow, fs.eye, fs.nose, fs.lips], length=2**16):
         self.length = length
         self.parts = parts
         self.imgs = defaultdict(lambda: defaultdict(list))
@@ -30,14 +33,14 @@ class PartsDataset:
 
         def imgs(label):
             return self.imgs[part][label]
-        
+
         anchor = choice(imgs(l1))
         positive = choice(imgs(l1))
         negative = choice(imgs(l2))
 
         return anchor, positive, negative
 
-    
+
 class FaceSim(nn.Module):
     def __init__(self):
         super().__init__()
@@ -51,8 +54,8 @@ class FaceSim(nn.Module):
         self.net = nn.Sequential(
             # eyebrow   32x64
             # eye       32x48
-            # nose      64x32 
-            # lips      32x64 
+            # nose      64x32
+            # lips      32x64
 
             blk(3, 8),     # 32
             blk(8, 16),    # 16
@@ -60,10 +63,9 @@ class FaceSim(nn.Module):
             blk(32, 64),   # 4
             blk(64, 128),  # 2
             nn.AdaptiveAvgPool2d(1))
-        
+
     def forward(self, x):
         return self.net(x).squeeze()
-
 
 
 if __name__ == "__main__":

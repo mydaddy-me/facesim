@@ -3,6 +3,7 @@
 data
 dist
 __pycache__
+lightning_logs
 
 
 *.zip
