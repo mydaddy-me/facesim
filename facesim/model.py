@@ -6,6 +6,7 @@ import torch
 from PIL import Image
 from torch import nn
 from torchvision.transforms.functional import to_tensor
+from torchvision.utils import save_image
 from tqdm import tqdm
 
 from facesim.fs import fs
@@ -107,7 +108,10 @@ class FaceSim(nn.Module):
 
 
 if __name__ == "__main__":
+    parts = Parts()
+    ds = parts.dataset(10)
+    a, p, n = ds[0]
 
-    model = FaceSim()
-    e = model(torch.rand(32, 3, 64, 64))
-    print(e.shape)
+    save_image(a, 'a.jpg')
+    save_image(p, 'p.jpg')
+    save_image(n, 'n.jpg')

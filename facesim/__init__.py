@@ -25,36 +25,16 @@ def pad(rect: Rect, pad: float = 0.1):
     return x - pad_x, y - pad_y, w + 2 * pad_x, h + 2 * pad_y
 
 
-def crop_bounding_rectangle(
-        image: MatLike,
-        rect: Rect,
-        ow: int,
-        oh: int,
-        padding=0.1):
-
-    aspect_ratio = ow / oh
-    x, y, w, h = pad(rect, padding)
-
-    if w / h > aspect_ratio:
-        new_w = w
-        new_h = int(w / aspect_ratio)
-    else:
-        new_h = h
-        new_w = int(h * aspect_ratio)
-
-    if new_w < ow or new_h < oh:
-        # logging.warning(f"Bounding box too small: {w}x{h}")
+def crop_resize(image: MatLike, rect: Rect, size: int = 64):
+    try:
+        x, y, w, h = rect
+        d = max(w, h) // 2
+        cx = x + d
+        cy = y + d
+        res = image[cy - d:cy + d, cx - d:cx + d]
+        return cv2.resize(res, (size, size))
+    except Exception:
         return None
-
-    center_x, center_y = x + w // 2, y + h // 2
-    x_new = max(0, center_x - new_w // 2)
-    y_new = max(0, center_y - new_h // 2)
-
-    x_new = min(x_new, image.shape[1] - new_w)
-    y_new = min(y_new, image.shape[0] - new_h)
-
-    res = image[y_new:y_new + new_h, x_new:x_new + new_w]
-    return cv2.resize(res, (ow, oh))
 
 
 detector = dlib.get_frontal_face_detector()  # type: ignore
@@ -75,7 +55,7 @@ def crop_face(image: MatLike):
 
     face = faces[0]
     x, y, w, h = face.left(), face.top(), face.width(), face.height()
-    return crop_bounding_rectangle(image, (x, y, w, h), 256, 256)
+    return crop_resize(image, (x, y, w, h), 256)
 
 
 @dataclass
@@ -129,18 +109,18 @@ def crop_parts(face256x256):
         landmarks.part(n)
         for n in range(48, 68)]
 
-    def extract_bb(pts, ow=64, oh=64):
+    def extract_bb(pts):
         x_min = min(pt.x for pt in pts)
         y_min = min(pt.y for pt in pts)
         x_max = max(pt.x for pt in pts)
         y_max = max(pt.y for pt in pts)
         rect = (x_min, y_min, x_max - x_min, y_max - y_min)
-        return crop_bounding_rectangle(face256x256, rect, ow, oh)
+        return crop_resize(face256x256, rect)
 
     return parts(
-        left_eyebrow=extract_bb(left_eyebrow_pts, oh=32),
-        right_eyebrow=extract_bb(right_eyebrow_pts, oh=32),
-        left_eye=extract_bb(left_eye_pts, oh=32, ow=48),
-        right_eye=extract_bb(right_eye_pts, oh=32, ow=48),
-        nose=extract_bb(nose_pts, ow=32),
-        lips=extract_bb(lips_pts, oh=32))
+        left_eyebrow=extract_bb(left_eyebrow_pts),
+        right_eyebrow=extract_bb(right_eyebrow_pts),
+        left_eye=extract_bb(left_eye_pts),
+        right_eye=extract_bb(right_eye_pts),
+        nose=extract_bb(nose_pts),
+        lips=extract_bb(lips_pts))
