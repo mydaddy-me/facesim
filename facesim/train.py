@@ -1,6 +1,7 @@
 import pytorch_lightning as pl
 import torch
 from lightning import seed_everything
+from lightning.pytorch.callbacks.early_stopping import EarlyStopping
 from torch.nn.functional import cosine_similarity as cos
 from torch.nn.functional import cross_entropy, softmax
 from torchmetrics.functional import accuracy
@@ -69,7 +70,13 @@ if __name__ == "__main__":
     module = FaceSimModule(model)
 
     trainer = pl.Trainer(
-        max_epochs=3,
-        deterministic=True)
+        max_epochs=4,
+        deterministic=True,
+        callbacks=[
+            EarlyStopping(
+                monitor='loss',
+                patience=3,
+                mode='min')  # type: ignore
+        ])
 
     trainer.fit(module, dl)
