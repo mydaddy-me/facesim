@@ -51,33 +51,33 @@ def parts():
         parts = crop_parts(face)
         
         if parts.left_eyebrow is not None:
-            left_eyebrow_dir = fs.faces / label
+            left_eyebrow_dir = fs.eyebrow / label
             left_eyebrow_dir.mkdir(exist_ok=True)
             left_eyebrow_file = left_eyebrow_dir / f.name
 
             cv2.imwrite(str(left_eyebrow_file), parts.left_eyebrow)
 
     
-        if parts.right_eyebrow is not None:
-            right_eyebrow_dir = fs.faces / label
-            right_eyebrow_dir.mkdir(exist_ok=True)
-            right_eyebrow_file = right_eyebrow_dir / f.name
+        # if parts.right_eyebrow is not None:
+        #     right_eyebrow_dir = fs.eyebrow / label
+        #     right_eyebrow_dir.mkdir(exist_ok=True)
+        #     right_eyebrow_file = right_eyebrow_dir / f.name
 
-            cv2.imwrite(str(right_eyebrow_file), parts.right_eyebrow)
+        #     cv2.imwrite(str(right_eyebrow_file), parts.right_eyebrow)
 
-        if parts.left_eye is not None:
-            left_eye_dir = fs.faces / label
-            left_eye_dir.mkdir(exist_ok=True)
-            left_eye_file = left_eye_dir / f.name
+        # if parts.left_eye is not None:
+        #     left_eye_dir = fs.eye / label
+        #     left_eye_dir.mkdir(exist_ok=True)
+        #     left_eye_file = left_eye_dir / f.name
 
-            cv2.imwrite(str(left_eye_file), parts.left_eye)
+        #     cv2.imwrite(str(left_eye_file), parts.left_eye)
 
-        if parts.right_eye is not None:
-            right_eye_dir = fs.faces / label
-            right_eye_dir.mkdir(exist_ok=True)
-            right_eye_file = right_eye_dir / f.name
+        # if parts.right_eye is not None:
+        #     right_eye_dir = fs.eye / label
+        #     right_eye_dir.mkdir(exist_ok=True)
+        #     right_eye_file = right_eye_dir / f.name
 
-            cv2.imwrite(str(right_eye_file), parts.right_eye)
+        #     cv2.imwrite(str(right_eye_file), parts.right_eye)
 
         if parts.nose is not None:
             nose_dir = fs.nose / label
