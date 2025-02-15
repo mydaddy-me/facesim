@@ -1,4 +1,5 @@
 from collections import defaultdict
+from functools import cache
 from random import choice
 
 import torch
@@ -24,9 +25,7 @@ class Parts:
             for f in tqdm(part.rglob('*.jpg')):
                 label = f.parent.name
                 part = f.parent.parent.name
-                img = Image.open(f)
-                img = to_tensor(img)
-                self.imgs[part][label].append(img)
+                self.imgs[part][label].append(f)
 
     def dataset(self, length: int):
         return PartsDataset(
@@ -51,6 +50,7 @@ class PartsDataset(torch.utils.data.Dataset):
     def __len__(self):
         return self.length
 
+    @cache
     def __getitem__(self, idx):
         part = choice(self.parts).name
         labels = list(self.imgs[part].keys())
@@ -58,17 +58,19 @@ class PartsDataset(torch.utils.data.Dataset):
         l1 = choice(labels)
         l2 = choice(labels)
 
-        def imgs(label):
-            return self.imgs[part][label]
+        def get_img(label):
+            img = choice(self.imgs[part][label])
+            img = Image.open(img)
+            img = to_tensor(img)
+            img = pad64x64(img)
 
-        anchor = choice(imgs(l1))
-        positive = choice(imgs(l1))
-        negative = choice(imgs(l2))
+            return img
 
-        return (
-            pad64x64(anchor),
-            pad64x64(positive),
-            pad64x64(negative))
+        anchor = get_img(l1)
+        positive = get_img(l1)
+        negative = get_img(l2)
+
+        return anchor, positive, negative
 
 
 class FaceSim(nn.Module):
@@ -91,7 +93,7 @@ class FaceSim(nn.Module):
             # lips      32x64
 
             *[blk(i, o) for i, o in io([3, 16, 32, 64, 128])],
-            nn.Conv2d(64, 128, 4, 1, 0))
+            nn.Conv2d(128, 128, 4, 1, 0))
 
     def forward(self, x):
         assert x.shape[1:] == (3, 64, 64), \
