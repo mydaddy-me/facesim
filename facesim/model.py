@@ -81,7 +81,7 @@ class FaceSim(nn.Module):
             return nn.Sequential(
                 nn.Conv2d(i, o, 3, 2, 1, bias=False),
                 nn.BatchNorm2d(o),
-                nn.ReLU())
+                nn.Tanh())
 
         def io(ios: list[int]):
             return zip(ios[:-1], ios[1:])
