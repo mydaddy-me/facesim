@@ -120,8 +120,8 @@ def crop_parts(face256x256):
     return parts(
         left_eyebrow=extract_bb(left_eyebrow_pts, oh=16),
         right_eyebrow=extract_bb(right_eyebrow_pts, oh=16),
-        left_eye=extract_bb(left_eye_pts, oh=24),
-        right_eye=extract_bb(right_eye_pts, oh=24),
+        left_eye=extract_bb(left_eye_pts, oh=32, ow=24),
+        right_eye=extract_bb(right_eye_pts, oh=32, ow=24),
         nose=extract_bb(nose_pts, ow=24),
         lips=extract_bb(lips_pts, oh=16))
 
