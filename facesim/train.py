@@ -24,6 +24,7 @@ class FaceSimModule(pl.LightningModule):
         an_sim = cos(ae, ne)
 
         self.log('sim/ap', ap_sim.mean(), prog_bar=True)
+        self.log('sim/an', an_sim.mean(), prog_bar=True)
 
         return -ap_sim.mean()
 
