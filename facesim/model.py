@@ -81,16 +81,16 @@ class FaceSim(nn.Module):
                 nn.BatchNorm2d(o),
                 nn.Sigmoid())
 
+        def io(ios: list[int]):
+            return zip(ios[:-1], ios[1:])
+
         self.net = nn.Sequential(
             # eyebrow   32x64
             # eye       32x48
             # nose      64x32
             # lips      32x64
 
-            blk(3, 8),     # 64
-            blk(8, 16),    # 32
-            blk(16, 32),   # 16
-            blk(32, 64),   # 8
+            *[blk(i, o) for i, o in io([3, 16, 32, 64, 128])],
             nn.Conv2d(64, 128, 4, 1, 0))
 
     def forward(self, x):
