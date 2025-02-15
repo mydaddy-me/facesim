@@ -26,6 +26,8 @@ class FaceSimModule(pl.LightningModule):
         ap_sim = cos(ae, pe)
         an_sim = cos(ae, ne)
 
+        self.log('sim/ap', ap_sim.mean(), prog_bar=True)
+
         sim = torch.stack([ap_sim, an_sim], dim=1)
 
         assert sim.shape == (len(a), 2), \
