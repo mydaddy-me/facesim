@@ -1,3 +1,5 @@
+from typing import Literal
+
 import lightning.pytorch as pl
 import torch
 from lightning import seed_everything
@@ -17,7 +19,7 @@ class FaceSimModule(pl.LightningModule):
     def forward(self, x):
         return self.model(x)
 
-    def training_step(self, batch, batch_idx):
+    def step(self, batch, name: Literal['train', 'val']):
         a, p, n = batch
         ae, pe, ne = self.model(a), self.model(p), self.model(n)
 
@@ -31,7 +33,7 @@ class FaceSimModule(pl.LightningModule):
 
         prob = softmax(sim, dim=1)
         self.log(
-            'acc',
+            f'acc/{name}',
             accuracy(
                 prob[:, 0],
                 torch.ones_like(ap_sim),
@@ -44,9 +46,15 @@ class FaceSimModule(pl.LightningModule):
                 ap_sim,
                 dtype=torch.long))
 
-        self.log('loss', loss, prog_bar=True)
+        self.log(f'loss/{name}', loss, prog_bar=True)
 
         return loss
+
+    def training_step(self, batch, batch_idx):
+        return self.step(batch, 'train')
+
+    def validation_step(self, batch, batch_idx):
+        return self.step(batch, 'val')
 
     def configure_optimizers(self):
         return torch.optim.Adam(
