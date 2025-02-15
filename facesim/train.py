@@ -3,7 +3,7 @@ from typing import Literal
 import lightning.pytorch as pl
 import torch
 from lightning import seed_everything
-from lightning.pytorch.callbacks.early_stopping import EarlyStopping
+from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
 from torch.nn.functional import cosine_similarity as cos
 from torch.nn.functional import cross_entropy, softmax
 from torchmetrics.functional import accuracy
@@ -74,6 +74,13 @@ if __name__ == "__main__":
         max_epochs=100,
         deterministic=True,
         callbacks=[
+
+            ModelCheckpoint(
+                monitor='loss/val',
+                filename='model',
+                save_top_k=1,
+                mode='min'),
+
             EarlyStopping(
                 monitor='loss/val',
                 patience=3,
