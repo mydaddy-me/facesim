@@ -26,7 +26,7 @@ class FaceSimModule(pl.LightningModule):
         self.log('sim/ap', ap_sim.mean(), prog_bar=True)
         self.log('sim/an', an_sim.mean(), prog_bar=True)
 
-        return -ap_sim.mean()
+        return -ap_sim.mean() + an_sim.mean()
 
         # sim = torch.stack([ap_sim, an_sim], dim=1)
 
