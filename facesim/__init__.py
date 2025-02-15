@@ -81,9 +81,9 @@ def crop_parts(face256x256):
         f"Input image must be 256x256 got {face256x256.shape[:2]}"
 
     gray = cv2.cvtColor(face256x256, cv2.COLOR_BGR2GRAY)
-    faces = detector(gray)
-    assert len(faces) == 1, f"Expected 1 face"
-    landmarks = predictor(gray, faces[0])
+    # faces = detector(gray)
+    # assert len(faces) == 1, f"Expected 1 face, got {len(faces)}"
+    landmarks = predictor(gray, dlib.rectangle(0, 0, 256, 256))
 
     left_eyebrow_pts = [
         landmarks.part(n)
