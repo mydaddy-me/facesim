@@ -69,7 +69,7 @@ if __name__ == "__main__":
     module = FaceSimModule(model)
 
     trainer = pl.Trainer(
-        max_epochs=1,
+        max_epochs=3,
         deterministic=True)
 
     trainer.fit(module, dl)
