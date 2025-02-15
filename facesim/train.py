@@ -3,7 +3,6 @@ from typing import Literal
 import lightning.pytorch as pl
 import torch
 from lightning import seed_everything
-from lightning.pytorch.callbacks import ModelCheckpoint
 from torch.nn.functional import cosine_similarity as cos
 
 from facesim.model import FaceSim, Parts
@@ -77,9 +76,9 @@ if __name__ == "__main__":
         deterministic=True,
         callbacks=[
 
-            ModelCheckpoint(
-                monitor='loss/val',
-                mode='min'),
+            # ModelCheckpoint(
+            #     monitor='loss/val',
+            #     mode='min'),
 
             # EarlyStopping(
             #     monitor='loss/val',
